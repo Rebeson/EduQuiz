@@ -10,13 +10,13 @@ Victor de Araújo Nunes - Responsável por implementar a Sistema do Quiz e Contr
 
 ## Principais Classes do Projeto
 
-Class: Pergunta
-Atributos: enunciado, alternativas, tema, dificuldade, resposta_certa
+Class: Pergunta  
+Atributos: enunciado, alternativas, tema, dificuldade, resposta_certa  
 
-Class: BancoDados
-Atributos: nome_banco
-Métodos: _criar_tabela
+Class: BancoDados  
+Atributos: nome_banco  
+Métodos: _criar_tabela  
 
-Class: SistemaQuiz
-Atributos: id, nome, email, pergunta, tema
-Métodos: cadastrar_usuario, cadastrar_pergunta, executar_quiz
+Class: SistemaQuiz  
+Atributos: id, nome, email, pergunta, tema  
+Métodos: cadastrar_usuario, cadastrar_pergunta, executar_quiz  
