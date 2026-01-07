@@ -38,5 +38,13 @@ class BancoDados:
 
 
 class Sistema_Quiz:
-    def __init__(self):
-        pass
+    def __init__(self, titulo):
+        self.titulo = titulo
+        self.lista_perguntas = []
+
+class Usuario:
+    def __init__(self, nome, email, matricula):
+        self._nome = nome
+        self._email = email
+        self._matricula = matricula
+        self._tentativas = []    
