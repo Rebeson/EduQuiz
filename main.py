@@ -81,3 +81,55 @@ class Usuario:
 
     def __str__(self):
         return f"Usuário: {self.nome}, Email: {self.email}, Matrícula: {self.matricula}"
+# Interface 
+def menu_principal():
+    sistema = Sistema_Quiz("Gerenciado de Questões")
+    
+    while True:
+        print("\n" + "="*30)
+        print(f" {sistema.titulo} ")
+        print("1 - Cadastrar uma Determinada Pergunta")
+        print("2 - Listar as Perguntas")
+        print("3 - Sair")
+        print("="*30)
+        
+        opcao = input("Escolha uma das opções seguintes: ")
+
+        if opcao == "1":
+            print("\n_Nova Pergunta:_")
+            enunciado = input("Enunciado: ")
+            tema = input("Tema: ")
+            dif = input("Dificuldade (FACIL, MEDIO, DIFICIL): ")
+            
+            
+            alts = []
+            for i in range(4): # Padrão com 4 alternativas
+                alts.append(input(f"Alternativa {i}: "))
+            
+            resp = int(input("O índice da resposta correta (0-3): "))
+
+            try:
+                p = Pergunta(enunciado, alts, tema, dif, resp)
+                sistema.adicionar_pergunta(p)
+                print("\n Pergunta adicionada com sucesso!")
+            except Exception as e:
+                print(f"\n Erro! {e}")
+
+        elif opcao == "2":
+            print("\n_LISTA DE PERGUNTAS_")
+            if not sistema.perguntas:
+                print("Nenhuma pergunta cadastrada no momento.")
+            else:
+                for idx, p in enumerate(sistema.perguntas):
+                    print(f"{idx} | {p.enunciado} [{p.dificuldade}]")
+            
+            input("\nPressione Enter para voltar.")
+
+        elif opcao == "3":
+            print("Encerrando programa. Obrigado!")
+            break
+        else:
+            print("Opção inválida!")
+
+if __name__ == "__main__":
+    menu_principal()
