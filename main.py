@@ -39,8 +39,19 @@ class BancoDados:
 
 class Sistema_Quiz:
     def __init__(self, titulo):
-        self.titulo = titulo
-        self.lista_perguntas = []
+        self._titulo = titulo
+        self._lista_perguntas = []
+
+    @property
+    def titulo(self):
+        return self._titulo
+    
+    @property
+    def perguntas(self):
+        return self._lista_perguntas
+
+    def adicionar_pergunta(self, pergunta):
+        self._lista_perguntas.append(pergunta)
 
 class Usuario:
     def __init__(self, nome, email, matricula):
@@ -48,3 +59,25 @@ class Usuario:
         self._email = email
         self._matricula = matricula
         self._tentativas = []    
+
+    @property
+    def nome(self):
+        return self._nome
+    
+    @property
+    def email(self):
+        return self._email
+    
+    @property
+    def matricula(self):
+        return self._matricula
+    
+    @property
+    def tentativas(self):
+        return self._tentativas
+    
+    def adicionar_tentativa(self, tentativa):
+        self._tentativas.append(tentativa)  
+
+    def __str__(self):
+        return f"Usuário: {self.nome}, Email: {self.email}, Matrícula: {self.matricula}"
