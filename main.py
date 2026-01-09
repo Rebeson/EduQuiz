@@ -10,8 +10,8 @@ class Dificuldade (Enum):
     MEDIO = 2
     DIFICIL = 3
 
-CONFIGURAÇÃO_PADRAO = {
-    "duração_padrão": 10,
+CONFIGURACAO_PADRAO = {
+    "duracao_padrao": 10,
     "máximo_tentativas": 3,
     "peso_dificuldade": {"FACIL": 1, "MEDIO": 2, "DIFICIL": 3}
 }
