@@ -69,10 +69,6 @@ def menu_principal():
         else:
             print("Opção inválida!")
 
-#if __name__ == "__main__":
-#    menu_principal()
+if __name__ == "__main__":
+    menu_principal()
 
-#Teste de Classes/Quiz.py
-quiz1 = Quiz("Quiz de Conhecimentos Gerais", ["Quanto é 2 + 2?", "Qual a capital da França?", "Quem escreveu 'Iracema'?"])
-print(quiz1.titulo)  # Output: Quiz de Conhecimentos Gerais
-print(quiz1.perguntas)  # Output: []    
