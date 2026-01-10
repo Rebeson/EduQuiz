@@ -59,6 +59,10 @@ class Usuario:
         self._email = email
         self._matricula = matricula
         self._tentativas = []    
+<<<<<<< HEAD
+
+        
+=======
 
     @property
     def nome(self):
@@ -133,3 +137,5 @@ def menu_principal():
 
 if __name__ == "__main__":
     menu_principal()
+
+>>>>>>> e46dc11a2200aefcadb7331ac45e735d2ea876b8
