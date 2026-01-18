@@ -1,0 +1,10 @@
+{
+    "duracao_padrao_minutos": 10,
+    "tentativas_maximas": 3,
+    "perguntas_por_quiz": 5,
+    "pesos_dificuldade": {
+        "FACIL": 1,
+        "MEDIO": 2,
+        "DIFICIL": 3
+    }
+}
