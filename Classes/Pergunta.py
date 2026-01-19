@@ -1,12 +1,37 @@
-class Pergunta:
+from Classes.Mixins import IdentificavelMixin
+from Classes.Excecoes import ValidacaoErro
+
+class Pergunta(IdentificavelMixin):
+    """Define a estrutura de uma questão com validações automáticas."""
     def __init__(self, enunciado, alternativas, tema, dificuldade, resposta_certa):
+        super().__init__()
         if not (3 <= len(alternativas) <= 5):
-            raise ValueError("A pergunta deve ter entre 3 e 5 alternativas.")
+            raise ValidacaoErro("A pergunta deve ter entre 3 e 5 alternativas.")
         if not (0 <= resposta_certa < len(alternativas)):
-            raise ValueError("Índice de resposta correta inválido.")
+            raise ValidacaoErro("Índice de resposta correta inválido.")
         
-        self.enunciado = enunciado
-        self.alternativas = alternativas
-        self.resposta_certa = resposta_certa
-        self.dificuldade = dificuldade.upper()
-        self.tema = tema.upper()
+        self._enunciado = enunciado
+        self._alternativas = alternativas
+        self._tema = tema.upper()
+        self._dificuldade = dificuldade.upper()
+        self._resposta_certa = resposta_certa
+
+    @property
+    def enunciado(self): return self._enunciado
+    @property
+    def tema(self): return self._tema
+    @property
+    def dificuldade(self): return self._dificuldade
+    @property
+    def alternativas(self): return self._alternativas
+    @property
+    def resposta_certa(self): return self._resposta_certa
+
+    def __eq__(self, outro):
+        """Evita duplicidade de enunciados no mesmo tema."""
+        if not isinstance(outro, Pergunta): return False
+        return self.enunciado == outro.enunciado and self.tema == outro.tema
+
+    def __str__(self):
+        """Resumo visual da pergunta."""
+        return f"[{self.dificuldade}] {self.tema}: {self.enunciado}"

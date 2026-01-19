@@ -1,75 +1,91 @@
-# Este projeto tem como objetivo avaliativo. Cuja funcionalidade principal é a criação de gerenciador de questões.
-import sqlite3
-import json
-import os
-from enum import Enum
-
-from Classes.Pergunta import Pergunta 
+import sys
+from Classes.Pergunta import Pergunta
 from Classes.Quiz import Quiz
-from Classes.BancoDados import BancoDados 
-from Classes.Dificuldade import Dificuldade
+from Classes.BancoDados import BancoDados
+from Classes.Configuracao import Configuracao
 from Classes.Usuario import Usuario
+from Classes.Perfil import Perfil
+from Classes.Excecoes import ValidacaoErro
 
-
-# Configuração Padrão do Sistema
-CONFIGURACAO_PADRAO = {
-    "duracao_padrao": 10,
-    "máximo_tentativas": 3,
-    "peso_dificuldade": {"FACIL": 1, "MEDIO": 2, "DIFICIL": 3}
-}
-
-
-# Interface 
-def menu_principal():
-    sistema = Quiz("Gerenciado de Questões")
+def executar_quiz(bd, config, usuario):
+    # Carrega o número configurado de perguntas aleatórias
+    dados = bd.carregar_perguntas_aleatorias(config.qtd_perguntas)
     
-    while True:
-        print("\n" + "="*30)
-        print(f" {sistema.titulo} ")
-        print("1 - Cadastrar uma Determinada Pergunta")
-        print("2 - Listar as Perguntas")
-        print("3 - Sair")
-        print("="*30)
+    if not dados:
+        print("\n[!] Não há perguntas cadastradas para iniciar o quiz.")
+        return
+    
+    # Verifica o limite de tentativas do usuário
+    cursor = bd.conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM tentativas WHERE matricula = ?", (usuario.matricula,))
+    if cursor.fetchone()[0] >= config.max_tentativas:
+        print(f"\n[!] Você já atingiu o limite de {config.max_tentativas} tentativas.")
+        return
+
+    quiz = Quiz("Quiz Randômico UFCA")
+    for p in dados: quiz.adicionar_pergunta(p)
+    
+    pontos = 0
+    print(f"\n--- INICIANDO: {quiz.titulo} ({len(quiz)} questões) ---")
+    
+    for i, p in enumerate(quiz, 1):
+        print(f"\nQuestão {i}: {p}")
+        for idx, a in enumerate(p.alternativas):
+            print(f"  {idx}) {a}")
         
-        opcao = input("Escolha uma das opções seguintes: ")
-
-        if opcao == "1":
-            print("\n_Nova Pergunta:_")
-            enunciado = input("Enunciado: ")
-            tema = input("Tema: ")
-            dif = input("Dificuldade (FACIL, MEDIO, DIFICIL): ")
-            
-            
-            alts = []
-            for i in range(4): # Padrão com 4 alternativas
-                alts.append(input(f"Alternativa {i}: "))
-            
-            resp = int(input("O índice da resposta correta (0-3): "))
-
-            try:
-                p = Pergunta(enunciado, alts, tema, dif, resp)
-                sistema.adicionar_pergunta(p)
-                print("\n Pergunta adicionada com sucesso!")
-            except Exception as e:
-                print(f"\n Erro! {e}")
-
-        elif opcao == "2":
-            print("\n_LISTA DE PERGUNTAS_")
-            if not sistema.perguntas:
-                print("Nenhuma pergunta cadastrada no momento.")
+        try:
+            resp = int(input("Sua resposta (índice): ").strip())
+            if resp == p.resposta_certa:
+                valor_questao = config.obter_peso(p.dificuldade)
+                pontos += valor_questao
+                print(f">> CORRETO! (+{valor_questao} pontos)")
             else:
-                for idx, p in enumerate(sistema.perguntas):
-                    print(f"{idx} | {p.enunciado} [{p.dificuldade}]")
-            
-            input("\nPressione Enter para voltar.")
+                print(f">> ERRADO. (A correta era: {p.resposta_certa})")
+        except:
+            print(">> Entrada inválida. Questão ignorada.")
 
-        elif opcao == "3":
-            print("Encerrando programa. Obrigado!")
-            break
-        else:
-            print("Opção inválida!")
+    bd.salvar_tentativa(usuario.matricula, quiz.titulo, pontos)
+    print(f"\n[FIM] Quiz finalizado. Pontuação total obtida: {pontos}")
+
+def menu_restrito(bd, config, user):
+    while True:
+        print(f"\n=== EDUQUIZ | {user.nome} ({user.perfil.value}) ===")
+        if user.perfil == Perfil.ADMIN:
+            print("1 - [ADMIN] Cadastrar Nova Pergunta")
+        print("2 - Responder Quiz Aleatório")
+        print("3 - Ver Ranking de Usuários")
+        print("4 - Logout")
+        
+        op = input("Escolha uma opção: ").strip()
+
+        if op == "1" and user.perfil == Perfil.ADMIN:
+            try:
+                enun = input("Enunciado: ").strip()
+                tema = input("Tema: ").strip()
+
+                print("Dificuldade: 1-FACIL, 2-MEDIO, 3-DIFICIL")
+                dif_input = input("Escolha (1, 2 ou 3): ").strip()
+                mapa_dif = {"1": "FACIL", "2": "MEDIO", "3": "DIFICIL"}
+                dif = mapa_dif.get(dif_input, dif_input.upper())
+                
+                alts = [input(f"Alt {i}: ").strip() for i in range(4)]
+                resp = int(input("Índice correta (0-3): ").strip())
+                
+                bd.salvar_pergunta(Pergunta(enun, alts, tema, dif, resp))
+                print("\n[OK] Pergunta cadastrada!")
+            except Exception as e: print(f"\n[ERRO] {e}")
             
-#BancoDeDados           
+        elif op == "2":
+            executar_quiz(bd, config, user)
+            
+        elif op == "3":
+            ranking = bd.obter_ranking()
+            print("\n--- RANKING GERAL (MÉDIA) ---")
+            for mat, med in ranking:
+                print(f"Matrícula: {mat} | Pontuação Média: {med:.2f}")
+                
+        elif op == "4": break
+
 def main():
     bd = BancoDados()
     config = Configuracao()
@@ -104,6 +120,4 @@ def main():
                 
         elif op == "3": sys.exit()
 
-if __name__ == "__main__":
-    menu_principal()
-
+if __name__ == "__main__": main()
