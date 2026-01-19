@@ -4,12 +4,17 @@ from Classes.Usuario import Usuario
 from Classes.Perfil import Perfil
 
 class BancoDados:
-    """Gerencia a persistência de dados em SQLite sem uso de ORM."""
+    
+    """Gerencia a persistência de dados em SQLite."""
+
     def __init__(self, nome_banco="quiz_banco.db"):
         self.conn = sqlite3.connect(nome_banco)
         self._criar_tabelas()
 
     def _criar_tabelas(self):
+
+        """ Tabelas necessárias para o projeto funcionar """
+
         cursor = self.conn.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (
             matricula TEXT PRIMARY KEY, nome TEXT, email TEXT, senha TEXT, perfil TEXT)''')
@@ -32,6 +37,9 @@ class BancoDados:
             return False
 
     def autenticar(self, matricula, senha):
+
+        """ Busca usuário para fazer o login """
+
         cursor = self.conn.cursor()
         cursor.execute("SELECT matricula, nome, email, senha, perfil FROM usuarios WHERE matricula = ? AND senha = ?", 
                        (matricula.strip(), senha.strip()))
@@ -48,7 +56,9 @@ class BancoDados:
         self.conn.commit()
 
     def carregar_perguntas_aleatorias(self, limite):
+
         """Seleciona um número limitado de perguntas de forma aleatória do banco."""
+        
         cursor = self.conn.cursor()
         cursor.execute('''SELECT enunciado, alternativas, tema, dificuldade, resposta_certa 
                           FROM perguntas ORDER BY RANDOM() LIMIT ?''', (limite,))
@@ -61,7 +71,9 @@ class BancoDados:
         self.conn.commit()
 
     def obter_ranking(self):
+
         """Relatório de ranking baseado na média de pontuação."""
+        
         cursor = self.conn.cursor()
         cursor.execute("SELECT matricula, AVG(pontuacao) FROM tentativas GROUP BY matricula ORDER BY AVG(pontuacao) DESC")
         return cursor.fetchall()

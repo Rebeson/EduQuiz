@@ -1,7 +1,9 @@
 from Classes.Perfil import Perfil
 
 class Usuario:
+
     """Guarda os dados do usuário e verifica o tipo de acesso."""
+
     def __init__(self, nome, email, matricula, senha, perfil=Perfil.ALUNO):
         self._nome = nome
         self._email = email
@@ -25,5 +27,7 @@ class Usuario:
     def perfil(self): return self._perfil
 
     def __str__(self):
+
         """ Método especial para mostrar o usuário formatado """
+        
         return f"[{self.perfil.value}] {self.nome} ({self.matricula})"

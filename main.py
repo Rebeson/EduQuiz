@@ -7,10 +7,13 @@ from Classes.Usuario import Usuario
 from Classes.Perfil import Perfil
 from Classes.Excecoes import ValidacaoErro
 
+""" Função para inicio o Quiz"""
+
 def executar_quiz(bd, config, usuario):
     # Carrega o número configurado de perguntas aleatórias
     dados = bd.carregar_perguntas_aleatorias(config.qtd_perguntas)
     
+    # Se não houver perguntas cadastradas retorna uma mensagem de erro
     if not dados:
         print("\n[!] Não há perguntas cadastradas para iniciar o quiz.")
         return
@@ -36,6 +39,9 @@ def executar_quiz(bd, config, usuario):
         try:
             resp = int(input("Sua resposta (índice): ").strip())
             if resp == p.resposta_certa:
+
+                """ Soma pontos baseados no peso da dificuldade """
+
                 valor_questao = config.obter_peso(p.dificuldade)
                 pontos += valor_questao
                 print(f">> CORRETO! (+{valor_questao} pontos)")
@@ -47,9 +53,14 @@ def executar_quiz(bd, config, usuario):
     bd.salvar_tentativa(usuario.matricula, quiz.titulo, pontos)
     print(f"\n[FIM] Quiz finalizado. Pontuação total obtida: {pontos}")
 
+""" Menu interno após login """
+
 def menu_restrito(bd, config, user):
     while True:
         print(f"\n=== EDUQUIZ | {user.nome} ({user.perfil.value}) ===")
+
+        """ Apenas um perfil Admin pode cadastrar perguntas """
+
         if user.perfil == Perfil.ADMIN:
             print("1 - [ADMIN] Cadastrar Nova Pergunta")
         print("2 - Responder Quiz Aleatório")
@@ -85,6 +96,7 @@ def menu_restrito(bd, config, user):
                 print(f"Matrícula: {mat} | Pontuação Média: {med:.2f}")
                 
         elif op == "4": break
+
 
 def main():
     bd = BancoDados()

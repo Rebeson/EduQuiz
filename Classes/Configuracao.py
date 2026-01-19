@@ -2,13 +2,17 @@ import json
 import os
 
 class Configuracao:
+    
     """Classe que lê o settings.json e retorna os valores de forma organizada."""
+    
     def __init__(self, arquivo="settings.json"):
         self.caminho = arquivo
         self.dados = self._carregar_configuracoes()
 
     def _carregar_configuracoes(self):
+       
         """ Caso o arquivo settings.json não exista, retorna valores padrão. """
+       
         if not os.path.exists(self.caminho):
             return {
                 "tentativas_maximas": 3, 
