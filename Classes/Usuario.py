@@ -1,29 +1,29 @@
+from Classes.Perfil import Perfil
+
 class Usuario:
-    def __init__(self, nome, email, matricula):
+    """Guarda os dados do usuário e verifica o tipo de acesso."""
+    def __init__(self, nome, email, matricula, senha, perfil=Perfil.ALUNO):
         self._nome = nome
         self._email = email
-        self._matricula = matricula
-        self._tentativas = []    
+        self._matricula = matricula # Matrícula para efetuar o login
+        self._senha = senha # Senha para efetuar o login
+        self._perfil = perfil if isinstance(perfil, Perfil) else Perfil(perfil)
 
-
     @property
-    def nome(self):
-        return self._nome
+    def nome(self): return self._nome
     
     @property
-    def email(self):
-        return self._email
+    def email(self): return self._email
     
     @property
-    def matricula(self):
-        return self._matricula
+    def matricula(self): return self._matricula
     
     @property
-    def tentativas(self):
-        return self._tentativas
+    def senha(self): return self._senha
     
-    def adicionar_tentativa(self, tentativa):
-        self._tentativas.append(tentativa)  
+    @property
+    def perfil(self): return self._perfil
 
     def __str__(self):
-        return f"Usuário: {self.nome}, Email: {self.email}, Matrícula: {self.matricula}"
+        """ Método especial para mostrar o usuário formatado """
+        return f"[{self.perfil.value}] {self.nome} ({self.matricula})"
