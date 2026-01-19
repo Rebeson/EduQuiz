@@ -68,7 +68,8 @@ def menu_principal():
             break
         else:
             print("Opção inválida!")
- #BancoDeDados           
+            
+#BancoDeDados           
 def main():
     bd = BancoDados()
     config = Configuracao()
